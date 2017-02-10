@@ -3,10 +3,7 @@ package models.users;
 import models.shopping.Basket;
 import models.shopping.ShopOrder;
 
-import javax.persistence.CascadeType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -26,7 +23,7 @@ public class Customer extends User{
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Basket basket;
 
-    @OneToOne
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<ShopOrder> orders;
 	
 	public Customer(String email, String role, String name, String password, String street1, String street2, String town, String postCode, String creditCard)

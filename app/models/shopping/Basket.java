@@ -1,9 +1,11 @@
 package models.shopping;
 
 import com.avaje.ebean.Model;
+import models.products.Product;
 import models.users.Customer;
 
 import javax.persistence.*;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -77,5 +79,60 @@ public class Basket extends Model {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
+
+
+    public void addProduct(Product p) {
+
+        boolean itemFound = false;
+        // Check if product already in this basket
+        // Check if item in basket
+        // Find orderitem with this product
+        // if found increment quantity
+        for (OrderItem i : basketItems) {
+            if (i.getProduct().getId() == p.getId()) {
+                i.increaseQty();
+                itemFound = true;
+                break;
+            }
+        }
+        if (itemFound == false) {
+            // Add orderItem to list
+            OrderItem newItem = new OrderItem(p);
+            // Add to items
+            basketItems.add(newItem);
+        }
+    }
+
+
+    public void removeItem(OrderItem item) {
+
+        // Using an iterator ensures 'safe' removal of list objects
+        // Removal of list items is unreliable as index can change if an item is added or removed elsewhere
+        // iterator works with an object reference which does not change
+        for (Iterator<OrderItem> iter = basketItems.iterator(); iter.hasNext();) {
+            OrderItem i = iter.next();
+            if (i.getId().equals(item.getId()))
+            {
+                // If more than one of these items in the basket then decrement
+                if (i.getQuantity() > 1 ) {
+                    i.decreaseQty();
+                }
+                // If only one left, remove this item from the basket (via the iterator)
+                else {
+                    // delete object from db
+                    i.delete();
+                    // remove object from list
+                    iter.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+
+
+
+
+
 }
 

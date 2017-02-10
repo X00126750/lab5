@@ -22,38 +22,12 @@ import views.html.*;
 
 public class ShoppingCtrl extends Controller {
     @Security.Authenticated(Secured.class)
+
     @With(CheckIfCustomer.class)
     // Get a user - if logged in email will be set in the session
 	private Customer getCurrentUser() {
 		return (Customer)User.getLoggedIn(session().get("email"));
 	}
-
-
-    
-
-    
-
-
-
-    // Empty Basket
-    @Transactional
-    public Result emptyBasket() {
-        
-        Customer c = getCurrentUser();
-        c.getBasket().removeAllItems();
-        c.getBasket().update();
-        
-        return ok(basket.render(c));
-    }
-
-
-    
-    // View an individual order
-    @Transactional
-    public Result viewOrder(long id) {
-        ShopOrder order = ShopOrder.find.byId(id);
-        return ok(orderConfirmed.render(getCurrentUser(), order));
-    }
 
 
     @Transactional
@@ -80,10 +54,8 @@ public class ShoppingCtrl extends Controller {
         return ok(basket.render(customer));
     }
 
-    @Transactional
-    public Result showBasket(){
-        return ok(basket.render(getCurrentUser()));
-    }
+
+
 
     @Transactional
     public Result addOne(Long itemId) {
@@ -116,26 +88,59 @@ public class ShoppingCtrl extends Controller {
 
     @Transactional
     public Result placeOrder(){
+
+
         Customer c = getCurrentUser();
+
         ShopOrder order = new ShopOrder();
 
         order.setCustomer(c);
+
         order.setItems(c.getBasket().getBasketItems());
+
         order.save();
 
         for(OrderItem i: order.getItems()){
             i.setOrder(order);
+
             i.setBasket(null);
+
             i.update();
         }
+
         order.update();
+
         c.getBasket().setBasketItems(null);
         c.getBasket().update();
 
         return ok(orderConfirmed.render(c, order));
-
     }
 
 
+    @Transactional
+    public Result showBasket(){
+        return ok(basket.render(getCurrentUser()));
+    }
+
+
+    // Empty Basket
+    @Transactional
+    public Result emptyBasket() {
+        
+        Customer c = getCurrentUser();
+        c.getBasket().removeAllItems();
+        c.getBasket().update();
+        
+        return ok(basket.render(c));
+    }
+
+
+    
+    // View an individual order
+    @Transactional
+    public Result viewOrder(long id) {
+        ShopOrder order = ShopOrder.find.byId(id);
+        return ok(orderConfirmed.render(getCurrentUser(), order));
+    }
 
 }

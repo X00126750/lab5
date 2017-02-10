@@ -18,14 +18,13 @@ public class ShopOrder extends Model {
 
     @Id
     private Long id;
-
-    @OneToMany(mappedBy ="order", cascade = CascadeType.ALL )
+    
     private Date OrderDate;
     
-    @ManyToOne
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
     
-
+    @ManyToOne
     private Customer customer;
 
     // Default constructor

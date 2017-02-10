@@ -18,7 +18,7 @@ public class OrderItem extends Model {
     @Id
     private Long id;
 
-     @ManyToOne
+    @ManyToOne
     private ShopOrder order;
     
     @ManyToOne
